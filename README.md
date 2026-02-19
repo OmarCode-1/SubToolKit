@@ -39,13 +39,14 @@ Each discovered subdomain is tagged with its source in `info.json`.
 ---
 
 ## 📂 Output Structure
+```
 Out/
 └── domainname_timestamp/
-    ├── alive.txt
-    ├── findings.txt
-    ├── subdomains.txt
-    └── info.json
-
+   ├── alive.txt
+   ├── findings.txt
+   ├── subdomains.txt
+   └── info.json
+```
 
 ### File Description
 
