@@ -76,8 +76,18 @@ python main.py example.com
 Out/target.com_21-33_10/
 ```
 
+## Note
+```
+the file in Modules/req named: requirements2.txt it will be run with brute
+If You need to change it edit the source code Modules/src/active_recon.py
+```
 
 ## 👤 Author
 Omar Ibrahim
 
+CTF : 0x4FMR
+
 Security Researcher | Junior Red Teamer
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
