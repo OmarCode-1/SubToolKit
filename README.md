@@ -85,6 +85,8 @@ If You need to change it edit the source code Modules/src/active_recon.py
 ## 👤 Author
 Omar Ibrahim
 
+CTF : 0x4FMR
+
 Security Researcher | Junior Red Teamer
 
 ## 📄 License
