@@ -1,6 +1,7 @@
 from pycrtsh import Crtsh
 import requests
 from urllib.parse import urlparse
+import time
 
 class SubDomainCRT:
     def __init__(self, domain: str) -> None:
@@ -8,9 +9,20 @@ class SubDomainCRT:
         self.domain = domain
 
     def crt_sh_subdomains(self) -> list:
-        self.ctrs = self.cleint.search(f'{self.domain}')
-        subdomains = [sub["name"] for sub in self.ctrs]
-        return subdomains
+        url = f"https://crt.sh/?q=%25.{self.domain}&output=json"
+        headers = {"User-Agent": "Mozilla/5.0"}
+
+        for attempt in range(3):
+            try:
+                r = requests.get(url, headers=headers, timeout=15)
+                if r.status_code == 200:
+                    data = r.json()
+                    return list({entry["name_value"] for entry in data})
+            except Exception as e:
+                print("Retrying...", e)
+                time.sleep(2)
+        return []
+
 
     def hackertarget_subdomains(self) -> list:
         url = f"https://api.hackertarget.com/hostsearch/?q={self.domain}"
@@ -20,7 +32,7 @@ class SubDomainCRT:
         return []
 
     def wayback_subdomains(self) -> list:
-        url = "http://web.archive.org/cdx/search/cdx"
+        url = "https://web.archive.org/cdx/search/cdx"
 
         params = {
             "url": f"*.{self.domain}/*",
@@ -29,19 +41,23 @@ class SubDomainCRT:
             "collapse": "urlkey"
         }
 
+        headers = {"User-Agent": "Mozilla/5.0"}
+
         try:
-            response = requests.get(url, params=params, timeout=15)
+            response = requests.get(url, params=params, headers=headers, timeout=20)
             response.raise_for_status()
+
             data = response.json()
+
+            if len(data) <= 1:
+                return []
 
             subdomains = []
 
             for entry in data[1:]:
                 original_url = entry[0]
                 parsed = urlparse(original_url)
-
-                hostname = parsed.hostname
-                subdomains.append(hostname.lower())
+                subdomains.append(parsed.hostname.lower())
 
             return subdomains
 
@@ -51,3 +67,4 @@ class SubDomainCRT:
         except Exception as e:
             print(f"[!] Parsing error: {e}")
             return []
+

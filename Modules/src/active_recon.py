@@ -1,5 +1,6 @@
 import dns.resolver
 import concurrent.futures
+import requests
 
 class ActiveRecon:
     def __init__(self, domain:str):
@@ -32,3 +33,14 @@ class ActiveRecon:
                     found.append(sub)
 
         return found
+
+    def is_alive(self, domain: str):
+        try:
+            response = requests.get(
+                f"http://{self.domain}",
+                timeout=5,
+                allow_redirects=True
+            )
+            return response.status_code < 500
+        except requests.RequestException:
+            return False

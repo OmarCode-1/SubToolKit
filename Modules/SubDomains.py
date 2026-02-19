@@ -10,7 +10,8 @@ class SubToolKit:
     def __init__(self, domain) -> None :
         self.domain = domain
         self.crtObj = SubDomainCRT(self.domain)
-        self.reconName = f"{self.domain}_{datetime.now().strftime("%H-%M-%S")}"
+        time = datetime.now().strftime("%I-%M-%S")
+        self.reconName = f"{self.domain}_{time}"
         self.all_subdomains = []
         self.__init_files()
         self.start_recon()
@@ -23,6 +24,7 @@ class SubToolKit:
         if os.access(os.path.dirname("Out") or '.', os.W_OK):
             os.makedirs(f"Out/{self.reconName}", exist_ok=True)
 
+        print("[+] Init the files")
         self.subDomainsFile = open(f"Out/{self.reconName}/subdomains.txt", 'w')
         self.aliveFile = open(f"Out/{self.reconName}/alive.txt", 'w')
         self.findingsFile = open(f"Out/{self.reconName}/findings.txt", 'w')
@@ -35,13 +37,13 @@ class SubToolKit:
         self.dork_info = Dorking(self.domain).google_dork_subdomains()
 
         self.passive_sub_domains = self.crt_info + self.hacker_target_info + self.wayback_info + self.dork_info
-        # self.active_sub_domains = ActiveRecon(self.domain).active_subdomain_enum()
+        self.active_sub_domains = ActiveRecon(self.domain).active_subdomain_enum()
 
-        self.all_subdomains = self.passive_sub_domains + []
-
+        print("[+] Saving the Output")
         self.save_findings_subdomains()
         self.save_subdomains_file()
         self.save_info_file()
+        self.save_alive_file()
 
     def save_findings_subdomains(self):
         for sub in self.all_subdomains:
@@ -60,30 +62,36 @@ class SubToolKit:
                 self.subDomainsFile.write(sub)
         self.subDomainsFile.close()
 
-
+    def save_alive_file(self):
+        reading_subdomains_file = open(f"Out/{self.reconName}/subdomains.txt", 'r').readlines()
+        for sub in reading_subdomains_file:
+            if ActiveRecon(sub[:-1]).is_alive(sub[:-1]):
+                self.aliveFile.write(f"{sub}")
+        self.aliveFile.close()
 
     def save_info_file(self):
         dictOfInfo = {}
-        reading_subdomains_file = open(f"Out/{self.reconName}/subdomains.txt", 'r')
-        for sub in reading_subdomains_file.readlines():
-            # findings = []
-            #
-            # if sub in ''.join(self.crt_info) :
-            #     findings.append("crt")
-            #
-            # if sub in ''.join(self.wayback_info):
-            #     findings.append("WayBack")
-            #
-            # if sub in ''.join(self.hacker_target_info):
-            #     findings.append("Hacker Target")
-            #
-            # if sub in ''.join(self.dork_info):
-            #     findings.append("Google Dorking")
+        reading_subdomains_file = open(f"Out/{self.reconName}/subdomains.txt", 'r').readlines()
 
-            # if sub in ''.join(self.active_sub_domains):
-            #     findings.append("Active Recon")
+        for sub in reading_subdomains_file:
+            findings = []
 
-            dictOfInfo[sub] = 0
+            if sub[:-1] in self.crt_info :
+                findings.append("crt")
+
+            if sub[:-1] in self.wayback_info:
+                findings.append("WayBack")
+
+            if sub[:-1] in self.hacker_target_info:
+                findings.append("Hacker Target")
+
+            if sub[:-1] in self.dork_info:
+                findings.append("Google Dorking")
+
+            if sub in self.active_sub_domains:
+                findings.append("Active Recon")
+
+            dictOfInfo[sub[:-1]] = findings
 
         json.dump(obj= dictOfInfo, fp=self.infoFile, indent=2)
 
