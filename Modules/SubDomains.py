@@ -39,6 +39,8 @@ class SubToolKit:
         self.passive_sub_domains = self.crt_info + self.hacker_target_info + self.wayback_info + self.dork_info
         self.active_sub_domains = ActiveRecon(self.domain).active_subdomain_enum()
 
+        self.all_subdomains = self.passive_sub_domains + self.active_sub_domains
+
         print("[+] Saving the Output")
         self.save_findings_subdomains()
         self.save_subdomains_file()
