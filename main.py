@@ -30,4 +30,4 @@ if __name__ == '__main__':
 
     print("Target domain: ", domain)
     print("Starting Recon: ", domain)
-    # SubToolKit(f"{domain}")
+    SubToolKit(f"{domain}")
