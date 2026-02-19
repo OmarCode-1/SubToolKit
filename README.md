@@ -74,3 +74,8 @@ python main.py example.com
 ```bash
 Out/target.com_21-33_10/
 ```
+
+
+## 👤 Author
+Omar Ibrahim
+Security Researcher | Junior Red Teamer
